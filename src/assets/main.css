@@ -10,7 +10,8 @@
   justify-content: center;
 
   font-weight: normal;
-  background: linear-gradient( #c4f0ff, #6174ae);
+  background: linear-gradient(#1abc9c, #3498db);
+  color: #ffffff;
 }
 
 a,
@@ -20,21 +21,21 @@ a,
   transition: 0.4s;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
+/*@media (hover: hover) {*/
+/*  a:hover {*/
+/*    background-color: hsla(160, 100%, 37%, 0.2);*/
+/*  }*/
+/*}*/
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+/*@media (min-width: 1024px) {*/
+/*  body {*/
+/*    display: flex;*/
+/*    place-items: center;*/
+/*  }*/
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-}
+/*  #app {*/
+/*    display: grid;*/
+/*    grid-template-columns: 1fr 1fr;*/
+/*    padding: 0 2rem;*/
+/*  }*/
+/*}*/

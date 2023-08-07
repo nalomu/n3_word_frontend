@@ -25,11 +25,13 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import router from '@/router'
 import { mapState } from 'pinia'
+import { ElMessage } from 'element-plus'
+import request from '@/request'
 
 export default defineComponent({
   name: 'Login',
   computed: {
-    ...mapState(useUserStore, ['user','token'])
+    ...mapState(useUserStore, ['user', 'token'])
 
   },
   data() {
@@ -46,10 +48,10 @@ export default defineComponent({
       formData.append('username', this.form.username)
       formData.append('password', this.form.password)
 
-      axios
-        .post('http://localhost:8000/token', formData)
+      request
+        .post('token', formData)
         .then((response) => {
-          this.$message.success('登录成功')
+          ElMessage.success('登录成功')
           const userStore = useUserStore()
           userStore.setToken(response.data.access_token)
           userStore.getUserInfo().then(() => {

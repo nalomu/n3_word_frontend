@@ -1,0 +1,40 @@
+<template>
+  <el-card header="所有单词">
+
+    <el-table :data="words" style="height: 80vh">
+      <el-table-column prop="word" label="日文"></el-table-column>
+      <el-table-column prop="translation" label="中文"></el-table-column>
+      <el-table-column prop="pronunciation" label="注音"></el-table-column>
+      <el-table-column prop="category.name" label="分类"></el-table-column>
+      <el-table-column prop="remark" label="备注"></el-table-column>
+    </el-table>
+  </el-card>
+</template>
+
+<script>
+import request from '@/request'
+
+export default {
+  name: 'Words',
+  mounted() {
+    this.getWords()
+  },
+  methods: {
+
+    getWords() {
+      request.get('words').then(({ data }) => {
+        console.log(data)
+        if (data.code === 200) {
+          this.words = data.data
+          this.getRandomWords()
+
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
