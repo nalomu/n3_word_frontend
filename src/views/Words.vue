@@ -11,13 +11,19 @@
   </el-card>
 </template>
 
-<script>
+<script lang="ts">
 import request from '@/request'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
   name: 'Words',
   mounted() {
     this.getWords()
+  },
+  data() {
+    return {
+      words: []
+    }
   },
   methods: {
 
@@ -26,14 +32,12 @@ export default {
         console.log(data)
         if (data.code === 200) {
           this.words = data.data
-          this.getRandomWords()
 
         }
       })
     }
   }
-}
-</script>
+})</script>
 
 <style scoped>
 

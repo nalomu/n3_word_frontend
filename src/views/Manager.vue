@@ -26,6 +26,7 @@ import { defineComponent } from 'vue'
 import { mapState } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import { genFileId, UploadInstance, UploadRawFile } from 'element-plus'
+import { BASE_URL } from '@/env'
 
 export default defineComponent({
   name: 'Manager',
@@ -33,7 +34,9 @@ export default defineComponent({
     ...mapState(useUserStore, ['user', 'token'])
   },
   data() {
-    return {}
+    return {
+      BASE_URL
+    }
   },
   methods: {
     handleExceed(files) {
