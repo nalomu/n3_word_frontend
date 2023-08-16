@@ -1,9 +1,18 @@
 // typings.d.ts or router.ts
 import 'vue-router'
+import { Router } from 'vue-router'
+
+export { }
+
+declare global {
+
+}
 
 declare module 'vue-router' {
   interface RouteMeta {
-    // 每个路由都必须声明
+    title?: string
+    icon?: string
+    hidden?: boolean
     auth?: boolean
   }
 }

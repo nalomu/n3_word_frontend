@@ -61,6 +61,8 @@ export default defineComponent({
     getRandomWords() {
       this.randomWords = getRandomElementsFromArray(this.words, 4)
       this.right = this.randomWords[Math.floor(this.randomWords.length * Math.random())]
+      const audio = new Audio(this.right.audio)
+      audio.play()
       console.log(this.randomWords, this.right)
     }
   }

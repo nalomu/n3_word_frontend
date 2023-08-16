@@ -1,7 +1,7 @@
 <template>
   <el-container style="justify-content: center;" direction="vertical">
     <h2 style="text-align:center;color: #fff;margin-bottom: 20px;"></h2>
-    <el-card header="N3 词汇练习">
+    <el-card header="登录">
       <!--login form -->
       <el-form :model="form" ref="loginForm" label-width="100px" @submit.native.prevent="handleSubmit">
         <el-form-item label="用户名">
@@ -44,23 +44,8 @@ export default defineComponent({
   },
   methods: {
     handleSubmit() {
-      const formData = new FormData()
-      formData.append('username', this.form.username)
-      formData.append('password', this.form.password)
-
-      request
-        .post('token', formData)
-        .then((response) => {
-          ElMessage.success('登录成功')
-          const userStore = useUserStore()
-          userStore.setToken(response.data.access_token)
-          userStore.getUserInfo().then(() => {
-            router.push('/')
-          })
-        })
-        .catch(({ response }) => {
-          console.log(response)
-        })
+      const userStore = useUserStore()
+      userStore.login(this.form.username, this.form.password)
     }
   }
 })</script>

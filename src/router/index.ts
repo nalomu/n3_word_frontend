@@ -9,26 +9,29 @@ const router = createRouter({
     {
       path: '/',
       name: 'index',
-      component: Index
+      component: Index,
+      meta: {
+        title: '首页'
+      }
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/Login.vue')
-    },
-    {
-      path: '/words',
-      name: 'words',
-      component: () => import('@/views/Words.vue')
-    },
-    {
-      path: '/manager',
-      name: 'manager',
+      component: () => import('@/views/Login.vue'),
       meta: {
-        auth: true
-      },
-      component: () => import('@/views/Manager.vue')
-    }
+        title: '登录',
+        hidden: true
+      }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('@/views/Register.vue'),
+      meta: {
+        title: '注册',
+        hidden: true
+      }
+    },
   ]
 })
 router.beforeEach((to, from) => {

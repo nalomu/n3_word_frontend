@@ -3,6 +3,7 @@ import axios, { AxiosError } from 'axios'
 import type { AxiosInstance, AxiosResponse } from 'axios'
 import { BASE_URL } from '@/env'
 import { useUserStore } from '@/stores/user'
+import { ElMessage } from 'element-plus'
 
 // 2. 创建一个 Axios 实例，可以配置基本的请求设置
 const request: AxiosInstance = axios.create({
@@ -24,6 +25,13 @@ request.interceptors.request.use((config) => {
 
 // 4. 定义响应拦截器（可选，可以在这里对响应做统一处理）
 request.interceptors.response.use((response: AxiosResponse) => {
+  if (response.data.code === 401) {
+    const store = useUserStore()
+    store.logout()
+  }
+  if (response.data.code != 200) {
+    ElMessage.error(response.data.message)
+  }
   // 在响应中做一些操作，例如处理错误状态码，或者统一处理响应数据
   return response
 }, (error: AxiosError) => {
