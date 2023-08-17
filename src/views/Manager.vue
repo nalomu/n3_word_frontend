@@ -16,8 +16,10 @@
               <el-button type="primary">导入单词</el-button>
             </template>
           </el-upload>
+          <el-button icon="refresh" @click="getWords" :loading="loading"></el-button>
         </div>
-        <el-table :data="words" style="height: calc(80vh - 60px - 40px)">
+        <el-table :data="words" style="height: calc(80vh - 60px - 40px)" :row-class-name="tableRowClassName" v-loading="loading">
+          <el-table-column prop="id" label="ID"></el-table-column>
           <el-table-column prop="word" label="日文"></el-table-column>
           <el-table-column prop="translation" label="中文"></el-table-column>
           <el-table-column prop="pronunciation" label="注音">
@@ -36,9 +38,16 @@
           <el-table-column prop="remark" label="备注"></el-table-column>
           <el-table-column label="操作">
             <template #default="{row}">
-              <el-link :underline="false" style="margin-right: 8px;" type="primary" @click="handleEdit(row)">编辑</el-link>
-              <el-link :underline="false" type="danger" @click="handleDelete(row)">删除</el-link>
-              <el-link :underline="false" type="primary" @click="handleGenerate(row)">生成读音</el-link>
+              <div class="operator">
+                <el-link :underline="false" type="primary" @click="handleEdit(row)">编辑</el-link>
+                <el-link :underline="false" type="danger" @click="handleDelete(row)">删除</el-link>
+                <el-link :underline="false" type="primary" @click="handleGenerate(row)" :disabled="row.loading">
+                  <el-icon :loading="row.loading" v-if="row.loading">
+                    <Loading />
+                  </el-icon>
+                  生成读音
+                </el-link>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -125,6 +134,7 @@ export default defineComponent({
       categories: [],
       dialogTitle: '',
       editVisible: false,
+      loading: false,
       form: {
         id: null,
         word: '',
@@ -148,6 +158,9 @@ export default defineComponent({
     this.getCategories()
   },
   methods: {
+    tableRowClassName({ row }) {
+      return row.loading ? 'loading' : ''
+    },
     handleExceed(files) {
       (this.$refs.upload as UploadInstance).clearFiles()
       const file = files[0] as UploadRawFile
@@ -155,7 +168,9 @@ export default defineComponent({
       ;(this.$refs.upload as UploadInstance).handleStart(file)
     },
     getWords() {
+      this.loading = true
       request.get('words').then(({ data }) => {
+        this.loading = false
         if (data.code === 200) {
           this.words = data.data
         }
@@ -198,7 +213,9 @@ export default defineComponent({
       })
     },
     handleGenerate(row) {
+      row.loading = true
       request.get(`words/${row.id}/audio`).then(({ data }) => {
+        row.loading = false
         if (data.code === 200) {
           ElMessage.success(data.message)
           this.getWords()
@@ -294,8 +311,9 @@ export default defineComponent({
 .operator {
   display: flex;
 
+  ::v-deep(.el-link),
   ::v-deep(.el-button) {
-    margin-right: 10px;
+    margin-right: 8px;
   }
 }
 </style>

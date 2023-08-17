@@ -11,7 +11,8 @@ const router = createRouter({
       name: 'index',
       component: Index,
       meta: {
-        title: '首页'
+        title: '首页',
+        icon:'House'
       }
     },
     {

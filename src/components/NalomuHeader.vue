@@ -1,8 +1,8 @@
 <template>
   <div class="nalomu-header">
     <div class="site-logo">
-      <img src="@/assets/logo.svg" alt="">
-      <span>NWP</span>
+      <img src="@/assets/logo.png" alt="">
+      <span>猹的日语单词练习网站</span>
     </div>
     <div class="user-info" v-if="userStore.user">
       <span style="margin-right: 8px;">{{ userStore.user?.nickname }}</span>

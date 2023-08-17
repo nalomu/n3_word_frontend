@@ -17,7 +17,7 @@ if (userStore.token) {
       <NalomuHeader />
     </el-header>
     <el-container>
-      <el-aside>
+      <el-aside width="auto">
         <Sidebar />
       </el-aside>
       <el-main>
