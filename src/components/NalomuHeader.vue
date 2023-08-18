@@ -47,6 +47,7 @@ const userStore = useUserStore()
   height: 100%;
   display: flex;
   align-items: center;
+  margin-right: 40px;
 
   &-link {
     margin-left: 10px;

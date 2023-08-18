@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Index from '@/views/Index.vue'
 import { useUserStore } from '@/stores/user'
+import NProgress from 'nprogress'
 
 
 const router = createRouter({
@@ -46,5 +47,10 @@ router.beforeEach((to, from) => {
     // 将用户重定向到登录页面
     return { name: 'login' }
   }
+  NProgress.start()
+})
+router.afterEach(() => {
+  // 进度条
+  NProgress.done()
 })
 export default router
