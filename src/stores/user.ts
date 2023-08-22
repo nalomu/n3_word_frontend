@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import request from '@/request'
 import { ElMessage } from 'element-plus'
-import { getUserRouter } from '@/router/router'
+import { getUserRouter, resetRouter } from '@/router/router'
 import type { RouteRecord } from 'vue-router'
 import router from '@/router'
 
@@ -47,7 +47,9 @@ export const useUserStore = defineStore('user', {
       this.token = ''
       this.user = null
       localStorage.removeItem('token')
-      router.push('/')
+      resetRouter(router)
+      this.menus = router.getRoutes()
+      router.push('/login')
     },
     async login(username: string, password: string) {
       const formData = new FormData()

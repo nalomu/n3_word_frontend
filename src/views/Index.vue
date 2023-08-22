@@ -3,7 +3,7 @@
     <el-card class="operator">
       <el-button @click="restart">{{ this.right ? '重新开始' : '开始答题' }}</el-button>
       <el-button @click="selectRange">选择范围</el-button>
-      <el-button @click="errorReport">读音/单词报错</el-button>
+      <el-button v-if="user && right" @click="errorReport">读音/单词报错</el-button>
     </el-card>
     <el-card v-if="right">
       <template #header>
@@ -35,7 +35,7 @@
       <WordRangeManager v-if="rangeVisible" :items="rawWords" @confirm="onConfirm" />
     </el-dialog>
     <el-dialog title="读音报错" v-model="reportVisible">
-      <Recorder v-if="reportVisible" :id="right.id" />
+      <Recorder v-if="right" :word="right" />
     </el-dialog>
   </div>
 </template>
@@ -56,7 +56,7 @@ export default defineComponent({
   name: 'Index',
   components: { Recorder, WordRangeManager },
   computed: {
-    ...mapState(useUserStore, ['token'])
+    ...mapState(useUserStore, ['user', 'token'])
   },
   data() {
     return {

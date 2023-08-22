@@ -17,26 +17,39 @@
             </template>
           </el-upload>
           <el-button icon="refresh" @click="getWords" :loading="loading"></el-button>
+          <el-form-item>
+            <el-input placeholder="筛选单词" v-model="searchQuery.word"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input placeholder="筛选翻译" v-model="searchQuery.translation"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-select placeholder="筛选分类" v-model="searchQuery.category_id" clearable>
+              <el-option
+                v-for="item in categories"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
         </div>
-        <el-table :data="words" style="height: calc(80vh - 60px - 40px)" :row-class-name="tableRowClassName" v-loading="loading">
-          <el-table-column prop="id" label="ID"></el-table-column>
+        <el-table :data="sliceData" style="height: calc(80vh - 60px - 40px)" :row-class-name="tableRowClassName" v-loading="loading">
+          <el-table-column prop="id" label="ID" width="80px"></el-table-column>
           <el-table-column prop="word" label="日文"></el-table-column>
           <el-table-column prop="translation" label="中文"></el-table-column>
           <el-table-column prop="pronunciation" label="注音">
             <template #default="{row}">
-              <el-link type="primary" :underline="false" @click="playRow(row)">
-                <span style="margin-right: 8px;">{{ row.pronunciation }}</span>
-
+              <el-link type="primary" :underline="false" @click="playRow(row)"><span style="margin-right: 8px;">{{ row.pronunciation }}</span>
                 <el-icon v-if="row.audio">
                   <Headset />
                 </el-icon>
-
               </el-link>
             </template>
           </el-table-column>
           <el-table-column prop="category.name" label="分类"></el-table-column>
           <el-table-column prop="remark" label="备注"></el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" width="200px">
             <template #default="{row}">
               <div class="operator">
                 <el-link :underline="false" type="primary" @click="handleEdit(row)">编辑</el-link>
@@ -51,6 +64,7 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination layout="prev, pager, next" :total="filteredData.length" v-model:current-page="currentPage" v-model:page-size="pageSize" />
       </el-tab-pane>
       <el-tab-pane label="分类">
         <div class="operator">
@@ -66,6 +80,9 @@
             </template>
           </el-table-column>
         </el-table>
+      </el-tab-pane>
+      <el-tab-pane label="报错">
+        <FeedbackManage />
       </el-tab-pane>
     </el-tabs>
     <!-- 单词添加/编辑弹窗 -->
@@ -121,17 +138,42 @@ import { useUserStore } from '@/stores/user'
 import { ElMessage, ElMessageBox, genFileId, UploadInstance, UploadRawFile } from 'element-plus'
 import { BASE_URL } from '@/env'
 import request from '@/request'
+import FeedbackManage from '@/views/components/FeedbackManage.vue'
 
 export default defineComponent({
   name: 'Manager',
+  components: { FeedbackManage },
   computed: {
-    ...mapState(useUserStore, ['user', 'token'])
+    ...mapState(useUserStore, ['user', 'token']),
+    sliceData() {
+      return this.filteredData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+    },
+    filteredData() {
+      let words = this.words
+      if (this.searchQuery.word) {
+        words = words.filter(i => i.word.indexOf(this.searchQuery.word) !== -1)
+      }
+      if (this.searchQuery.translation) {
+        words = words.filter(i => i.translation.indexOf(this.searchQuery.translation) !== -1)
+      }
+      if (this.searchQuery.category_id) {
+        words = words.filter(i => i.category_id === this.searchQuery.category_id)
+      }
+      return words
+    }
   },
   data() {
     return {
+      currentPage: 1,
+      pageSize: 20,
       BASE_URL,
       words: [],
       categories: [],
+      searchQuery: {
+        word: '',
+        translation: '',
+        category_id: null
+      },
       dialogTitle: '',
       editVisible: false,
       loading: false,

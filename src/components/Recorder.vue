@@ -1,32 +1,51 @@
 <template>
-  <div>
-    <div>
-      <el-button @click="isRecording ? stop() : start()">{{ isRecording ? '停止录音' : (audioUrl ? '重新录音' : '开始录音') }}</el-button>
-    </div>
-    <div style="margin-top: 20px;">
-      <audio :src="audioUrl" v-if="audioUrl" controls autoplay></audio>
-    </div>
-    <div>
-      <el-button @click="submitAudio">提交</el-button>
-    </div>
-  </div>
+  <el-form label-width="120px">
+    <el-form-item label="报错单词">
+      <div style="font-size: 20px;">
+        <ruby>
+          {{ word.word }}
+          <rt>{{ word.pronunciation }}</rt>
+        </ruby>
+      </div>
+    </el-form-item>
+    <el-form-item label="错误类型">
+      <el-select placeholder="选择错误类型" v-model="error_type">
+        <el-option label="读音错误" value="pronunciation"></el-option>
+        <el-option label="翻译错误" value="translate"></el-option>
+      </el-select>
+    </el-form-item>
+    <el-form-item label="读音上传">
+      <div>
+        <el-button @click="isRecording ? stop() : start()">{{ isRecording ? '停止录音' : (audioUrl ? '重新录音' : '开始录音') }}</el-button>
+      </div>
+      <div style="margin-top: 20px;">
+        <audio :src="audioUrl" v-if="audioUrl" controls autoplay></audio>
+      </div>
+    </el-form-item>
+    <el-form-item>
+      <el-button :loading="loading" @click="submitAudio">提交</el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
 <script lang="ts">
 import { ElMessage } from 'element-plus'
 import request from '@/request'
+import { PropType } from 'vue'
 
 export default {
   name: 'Recorder',
   props: {
-    id: {
-      type: Number,
+    word: {
+      type: Object as PropType<Word>,
       required: true
     }
   },
   data() {
     return {
+      error_type: 'pronunciation',
       isRecording: false,
+      loading: false,
       mediaRecorder: null as MediaRecorder | null,
       audioChunks: [],
       audioUrl: '',
@@ -80,7 +99,10 @@ export default {
       }
       const formData = new FormData()
       formData.append('file', this.audioBlob)
-      request.post(`/words/${this.id}/audio`, formData).then(({ data }) => {
+      formData.append('error_type', this.error_type)
+      this.loading = true
+      request.post(`/words/${this.word.id}/feedback/`, formData).then(({ data }) => {
+        this.loading = false
         ElMessage.success(data.message)
         this.$emit('success')
       })

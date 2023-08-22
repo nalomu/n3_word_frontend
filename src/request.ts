@@ -28,6 +28,7 @@ request.interceptors.response.use((response: AxiosResponse) => {
   if (response.data.code === 401) {
     const store = useUserStore()
     store.logout()
+    ElMessage.error('登录已过期，请重新登录')
   }
   if (response.data.code != 200) {
     ElMessage.error(response.data.message)
@@ -35,6 +36,11 @@ request.interceptors.response.use((response: AxiosResponse) => {
   // 在响应中做一些操作，例如处理错误状态码，或者统一处理响应数据
   return response
 }, (error: AxiosError) => {
+  if (error.response.status === 401) {
+    const store = useUserStore()
+    store.logout()
+    ElMessage.error('登录已过期，请重新登录')
+  }
   // 处理请求错误，例如网络错误或服务器错误
   // 可以根据需要返回自定义的错误对象
   return Promise.reject(error)

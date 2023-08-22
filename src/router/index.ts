@@ -13,7 +13,7 @@ const router = createRouter({
       component: Index,
       meta: {
         title: '首页',
-        icon:'House'
+        icon: 'House'
       }
     },
     {
@@ -33,11 +33,20 @@ const router = createRouter({
         title: '注册',
         hidden: true
       }
-    },
+    }
   ]
 })
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   const store = useUserStore()
+  if (store.token && !store.user) {
+    await store.getUserInfo()
+    if (to.matched.length === 0) { // 刷新页面第一次进入页面时，addRoute刚添加路由进去，但没有成功加载需要重进一次
+      return {
+        ...to,
+        replace: true // 重进一次, 不保留重复历史
+      }
+    }
+  }
   // 检查用户是否已登录
   if (
     !store.token

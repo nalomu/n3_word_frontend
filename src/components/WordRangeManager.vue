@@ -6,6 +6,7 @@
       <el-button @click="selectedItems=preSelectedItems=items">全选</el-button>
       <el-button @click="$emit('confirm', selectedItems)">确定</el-button>
     </div>
+    <el-alert type="success">框选下面的单词, 默认反选, 按住shift加选，点击也可以选中。</el-alert>
     <div
       tabindex="0"
       class="selection-box"
