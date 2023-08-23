@@ -13,6 +13,7 @@ declare type User = {
 }
 declare type UserStore = {
   token: string
+  refresh_token: string
   user: User | null
   menus: RouteRecord[]
 }
@@ -21,6 +22,7 @@ export const useUserStore = defineStore('user', {
   state: (): UserStore => {
     return {
       token: localStorage.getItem('token') || '',
+      refresh_token: localStorage.getItem('refresh_token') || '',
       user: null,
       menus: router.getRoutes()
     }
@@ -29,9 +31,11 @@ export const useUserStore = defineStore('user', {
     setUser(_user: User) {
       this.user = _user
     },
-    setToken(payload: string) {
-      this.token = payload
-      localStorage.setItem('token', payload)
+    setToken(token: string, refresh_token: string) {
+      this.token = token
+      this.refresh_token = refresh_token
+      localStorage.setItem('token', token)
+      localStorage.setItem('refresh_token', refresh_token)
     },
     async getUserInfo() {
       if (!this.token) {
@@ -60,7 +64,7 @@ export const useUserStore = defineStore('user', {
 
       if (data.code === 200) {
         ElMessage.success('登录成功')
-        this.setToken(data.data.access_token)
+        this.setToken(data.data.access_token, data.data.refresh_token)
         await this.getUserInfo()
         router.push('/')
       }

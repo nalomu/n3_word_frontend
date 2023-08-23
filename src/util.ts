@@ -10,3 +10,13 @@ export function getRandomElementsFromArray(array: Array<any>, count: number) {
   shuffleArray(shuffledArray)
   return shuffledArray.slice(0, count)
 }
+
+export function avg(arr: Array<any>) {
+  if (arr.length === 0) {
+    return 0 // 避免除以 0
+  }
+
+  const sum = arr.reduce((total, num) => total + num, 0)
+  const average = sum / arr.length
+  return average
+}

@@ -40,6 +40,12 @@ declare global {
     word_id: number;
     word: Word;
   }
+
+  interface QuestionRange {
+    type: 'word' | 'category',
+    range: number[]
+  }
+
 }
 
 declare module 'vue-router' {

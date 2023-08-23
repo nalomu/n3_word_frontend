@@ -17,6 +17,7 @@ request.interceptors.request.use((config) => {
   const store = useUserStore()
   if (store.token) {
     config.headers.Authorization = 'Bearer ' + store.token
+    config.headers['X-REFRESH-TOKEN'] = store.refresh_token
   }
   return config
 }, (error) => {
@@ -25,8 +26,13 @@ request.interceptors.request.use((config) => {
 
 // 4. 定义响应拦截器（可选，可以在这里对响应做统一处理）
 request.interceptors.response.use((response: AxiosResponse) => {
+  const store = useUserStore()
+  console.log(response.headers)
+  console.log(response.headers['authorization'],response.headers['x-refresh-token'])
+  if (response.headers['authorization'] && response.headers['x-refresh-token']) {
+    store.setToken(response.headers['authorization'].substring(7), response.headers['x-refresh-token'])
+  }
   if (response.data.code === 401) {
-    const store = useUserStore()
     store.logout()
     ElMessage.error('登录已过期，请重新登录')
   }

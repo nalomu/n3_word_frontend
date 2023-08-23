@@ -2,16 +2,16 @@
   <div class="index-container">
     <el-card class="operator">
       <el-button @click="restart">{{ this.right ? '重新开始' : '开始答题' }}</el-button>
-      <el-button @click="selectRange">选择范围</el-button>
+      <el-button @click="selectRange">答题设置</el-button>
       <el-button v-if="user && right" @click="errorReport">读音/单词报错</el-button>
     </el-card>
-    <el-card v-if="right">
+    <el-card v-if="right" style="width: 100%;max-width: 500px">
       <template #header>
-        <div style="display: flex;align-items: center;justify-content: space-between;">
+        <div style="display: flex;align-items: center;justify-content: space-between;width:100%">
 
           <div style="text-align:center;">答题卡</div>
           <div>共：{{ words.length }}, 目前: {{ usedWords.size }}, 剩余：{{ words.length - usedWords.size }}</div>
-          <div>正确率： {{ (((usedWords.size - errorCount) / usedWords.size) * 100).toFixed(0) }}%</div>
+          <div>正确率： {{ ((avg(acc)) * 100).toFixed(0) }}%</div>
 
         </div>
       </template>
@@ -20,6 +20,19 @@
           <rt> {{ right.pronunciation }}</rt>
         </ruby>
       </div>
+      <template v-else>
+        <div style="text-align:center;">
+          <h2>恭喜你完成了本轮答题！</h2>
+          <div>你回答了共：{{ words.length }}个单词</div>
+          <div>正确： {{ acc.filter(i => i).length }}</div>
+          <div>错误： {{ acc.filter(i => !i).length }}</div>
+          <div>正确率： {{ ((avg(acc)) * 100).toFixed(0) }}%</div>
+
+        </div>
+        <div style="text-align:center;margin-top:20px;">
+          <el-button @click="restart">重新开始</el-button>
+        </div>
+      </template>
       <!--<el-button-group style="width: 100%;display:flex;">-->
       <el-row class="answer" :gutter="20">
         <el-col v-for="word in randomWords" :xs="12" :sm="12" :md="6" class="answer-col">
@@ -31,12 +44,12 @@
       </el-row>
       <!--</el-button-group>-->
     </el-card>
-    <el-dialog title="答题范围" v-model="rangeVisible">
-      <WordRangeManager v-if="rangeVisible" :items="rawWords" @confirm="onConfirm" />
-    </el-dialog>
-    <el-dialog title="读音报错" v-model="reportVisible">
+    <el-drawer title="答题设置" v-model="settingsVisible" size="80%">
+      <SettingsPanel v-if="settingsVisible" />
+    </el-drawer>
+    <el-drawer title="读音报错" v-model="reportVisible" size="80%">
       <Recorder v-if="right" :word="right" />
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
@@ -47,64 +60,69 @@ import { mapState } from 'pinia'
 import { useUserStore } from '@/stores/user'
 import { BASE_URL } from '@/env'
 import request from '@/request'
-import { getRandomElementsFromArray } from '@/util'
+import { avg, getRandomElementsFromArray } from '@/util'
 import { Howl } from 'howler'
 import WordRangeManager from '@/components/WordRangeManager.vue'
 import Recorder from '@/components/Recorder.vue'
+import { useSettingsStore } from '@/stores/settings'
+import SettingsPanel from '@/components/SettingsPanel.vue'
 
 export default defineComponent({
   name: 'Index',
-  components: { Recorder, WordRangeManager },
+  components: { SettingsPanel, Recorder, WordRangeManager },
   computed: {
     ...mapState(useUserStore, ['user', 'token'])
   },
   data() {
     return {
-      rangeVisible: false,
+      settingsVisible: false,
       reportVisible: false,
       BASE_URL,
-      usedWords: new Set(),
-      rawWords: [],
-      words: [],
-      randomWords: [],
-      right: null,
-      errorCount: 0,
-      prevError: null,
-      audio: null as HTMLAudioElement
+      usedWords: new Set() as Set<Word>,
+      rawWords: [] as Word[],
+      words: [] as Word[],
+      randomWords: [] as Word[],
+      acc: [] as boolean[],
+      right: null as null | Word,
+      prevError: null as null | Word,
+      audio: null as HTMLAudioElement | null
     }
   },
   mounted() {
     this.getWords()
   },
   methods: {
-    onConfirm(items) {
-      this.words = items
-      this.rangeVisible = false
+    avg,
+    onConfirm() {
+      this.settingsVisible = false
     },
     restart() {
-      this.errorCount = 0
       this.prevError = null
       this.usedWords.clear()
       this.right = null
       this.randomWords = []
+      this.acc = []
       this.getRandomWords()
     },
     checkWord(word) {
-      if (word.word === this.right.word) {
+      console.log(this.usedWords.size)
+      if (word.word === this.right!.word) {
         ElMessage.success('正确！')
+        this.acc[this.usedWords.size - 1] = this.prevError != this.right
         this.getRandomWords()
       } else {
-        if (this.prevError != this.right) {
-          this.errorCount++
-          this.prevError = this.right
-        }
+        this.prevError = this.right
         ElMessage.error('错误！')
       }
       // this.right = word
       // this.randomWords = getRandomElementsFromArray(this.words, 4)
     },
     getWords() {
-      request.get('words').then(({ data }) => {
+      const settings = useSettingsStore()
+      request.post('wordsList', {
+        question_range: settings.question_range,
+        question_count: settings.question_count
+      }).then(({ data }) => {
         console.log(data)
         if (data.code === 200) {
           this.rawWords = this.words = data.data
@@ -128,12 +146,12 @@ export default defineComponent({
       this.audio = new Howl({
         src: [this.right.audio]
       })
-      this.audio.play()
+      this.audio!.play()
       this.usedWords.add(this.right)
     },
     selectRange() {
       // ElMessage.info('开发中……')
-      this.rangeVisible = true
+      this.settingsVisible = true
     },
     errorReport() {
       // ElMessage.info('开发中……')
@@ -159,7 +177,8 @@ export default defineComponent({
 }
 
 .operator {
-  max-width: 600px;
+  max-width: 500px;
+  width: 100%;
 //width: 100%; display: flex; justify-content: center; margin-bottom: 20px;
 }
 

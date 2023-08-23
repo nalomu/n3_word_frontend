@@ -1,7 +1,6 @@
 <template>
-  <div>
+  <div class="wrm">
     <div class="operator">
-
       <el-button @click="selectedItems=preSelectedItems=[]">清空选择</el-button>
       <el-button @click="selectedItems=preSelectedItems=items">全选</el-button>
       <el-button @click="$emit('confirm', selectedItems)">确定</el-button>
@@ -19,17 +18,20 @@
       @keyup="handleKeyUp"
     >
       <div :style="selectionBoxStyles" v-if="isSelecting"></div>
-      <ul class="word-list">
-        <li class="word-item" :class="{active: preSelectedItems.includes(item)}" v-for="(item, index) in items" :key="item.id" :ref="`item${index}`">
-          <div class="ruby">
-            <ruby>
-              {{ item.word }}
-              <rt>{{ item.pronunciation }}</rt>
-            </ruby>
+      <el-row class="word-list" :gutter="20">
+        <el-col :xs="12" :sm="12" :md="6" :lg="6" :xl="4" v-for="(item, index) in items" :key="item.id">
+          <div class="word-item" :class="{active: preSelectedItems.includes(item)}" :ref="`item${index}`">
+
+            <div class="ruby">
+              <ruby>
+                {{ item.word }}
+                <rt>{{ item.pronunciation }}</rt>
+              </ruby>
+            </div>
+            <div>{{ item.translation }}</div>
           </div>
-          <div>{{ item.translation }}</div>
-        </li>
-      </ul>
+        </el-col>
+      </el-row>
     </div>
   </div>
 </template>
@@ -60,12 +62,15 @@ export default defineComponent({
   },
   computed: {
     selectionBoxStyles() {
+      const rect = (this.$refs.selectionBox as HTMLElement).getBoundingClientRect()
+      const scrollTop = (this.$refs.selectionBox as HTMLElement).scrollTop
       const styles = {
-        position: 'fixed',
+        zIndex: '99',
+        position: 'absolute',
         border: '1px dashed #000',
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
-        left: `${Math.min(this.startX, this.endX)}px`,
-        top: `${Math.min(this.startY, this.endY)}px`,
+        left: `${Math.min(this.startX, this.endX) - rect.left}px`,
+        top: `${Math.min(this.startY, this.endY) - rect.top + scrollTop}px`,
         width: `${Math.abs(this.startX - this.endX)}px`,
         height: `${Math.abs(this.startY - this.endY)}px`
       }
@@ -97,9 +102,6 @@ export default defineComponent({
       }
     },
     handleMouseDown(event) {
-      // if (event.target != this.$refs.selectionBox) {
-      //   return
-      // }
       this.isSelecting = true
       this.startX = event.clientX
       this.startY = event.clientY
@@ -121,7 +123,6 @@ export default defineComponent({
       }
     },
     checkSelectedItems(change = true) {
-      console.log('this.isControl, this.isShift:', this.isControl, this.isShift)
 
       function difference(arr1, arr2) {
         return arr1.filter(item => !arr2.includes(item))
@@ -175,23 +176,21 @@ export default defineComponent({
   position: relative;
   z-index: 999;
   min-height: 300px;
-  padding: 50px;
+  //padding: 50px;
   user-select: none;
   max-height: 600px;
   overflow-y: auto;
 }
 
-li.active {
+.word-item.active {
   background-color: #8bffcf;
 
 }
 
 .word-list {
   list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
+  //padding: 0;
+  //margin: 0;
 }
 
 .word-item {
@@ -200,9 +199,9 @@ li.active {
     font-weight: bold;
   }
 
-  width: calc(25% - 20px);
+  //width: calc(25% - 20px);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  margin: 10px;
+  margin-top: 20px;
   text-align: center;
   padding: 10px 20px;
 }
@@ -210,4 +209,5 @@ li.active {
 .operator {
   margin-bottom: 20px;
 }
+
 </style>
