@@ -10,6 +10,7 @@ declare global {
     username: string;
     id: number;
     is_admin: number;
+    settings:any
   }
 
   export interface Category {

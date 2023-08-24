@@ -4,13 +4,8 @@ import { ElMessage } from 'element-plus'
 import { getUserRouter, resetRouter } from '@/router/router'
 import type { RouteRecord } from 'vue-router'
 import router from '@/router'
+import { useSettingsStore } from '@/stores/settings'
 
-declare type User = {
-  id: number
-  nickname: string
-  username: string
-  is_admin: boolean
-}
 declare type UserStore = {
   token: string
   refresh_token: string
@@ -30,6 +25,10 @@ export const useUserStore = defineStore('user', {
   actions: {
     setUser(_user: User) {
       this.user = _user
+      if (this.user.settings) {
+        useSettingsStore().setCount(this.user.settings.question_count)
+        useSettingsStore().setRange(this.user.settings.question_range)
+      }
     },
     setToken(token: string, refresh_token: string) {
       this.token = token

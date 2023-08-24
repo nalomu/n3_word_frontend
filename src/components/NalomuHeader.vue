@@ -2,10 +2,10 @@
   <div class="nalomu-header">
     <div class="site-logo">
       <img src="@/assets/logo.png" alt="">
-      <span>猹的日语单词练习网站</span>
+      <span>猹词单</span>
     </div>
     <div class="user-info" v-if="userStore.user">
-      <span style="margin-right: 8px;">{{ userStore.user?.nickname }}</span>
+      <router-link to="/user" style="margin-right: 8px;" >{{ userStore.user?.nickname }}</router-link>
       <a @click="userStore.logout" type="text" class="logout-button">登出</a>
     </div>
     <div class="user-info" v-else>
@@ -40,6 +40,12 @@ const userStore = useUserStore()
 
   span {
     margin-left: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .site-logo span {
+    display: none;
   }
 }
 

@@ -9,6 +9,8 @@
     "src/**/__tests__/*"
   ],
   "compilerOptions": {
+    "isolatedModules": true,
+    "strict": true,
     "composite": true,
     "baseUrl": "./n3_words",
     "paths": {

@@ -45,7 +45,7 @@
       <!--</el-button-group>-->
     </el-card>
     <el-drawer title="答题设置" v-model="settingsVisible" size="80%">
-      <SettingsPanel v-if="settingsVisible" />
+      <SettingsPanel v-if="settingsVisible" @success="onConfirm" />
     </el-drawer>
     <el-drawer title="读音报错" v-model="reportVisible" size="80%">
       <Recorder v-if="right" :word="right" />
@@ -95,6 +95,9 @@ export default defineComponent({
     avg,
     onConfirm() {
       this.settingsVisible = false
+      this.getWords().then(() => {
+        this.restart()
+      })
     },
     restart() {
       this.prevError = null
@@ -117,17 +120,15 @@ export default defineComponent({
       // this.right = word
       // this.randomWords = getRandomElementsFromArray(this.words, 4)
     },
-    getWords() {
+    async getWords() {
       const settings = useSettingsStore()
-      request.post('wordsList', {
+      const { data } = await request.post('wordsList', {
         question_range: settings.question_range,
         question_count: settings.question_count
-      }).then(({ data }) => {
-        console.log(data)
-        if (data.code === 200) {
-          this.rawWords = this.words = data.data
-        }
       })
+      if (data.code === 200) {
+        this.rawWords = this.words = data.data
+      }
     },
     getRandomWords() {
       if (this.usedWords.size === this.words.length) {

@@ -3,7 +3,6 @@
     <div class="operator">
       <el-button @click="selectedItems=preSelectedItems=[]">清空选择</el-button>
       <el-button @click="selectedItems=preSelectedItems=items">全选</el-button>
-      <el-button @click="$emit('confirm', selectedItems)">确定</el-button>
     </div>
     <el-alert type="success">框选下面的单词, 默认反选, 按住shift加选，点击也可以选中。</el-alert>
     <div
@@ -38,6 +37,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useSettingsStore } from '@/stores/settings'
 
 export default defineComponent({
   emits: ['confirm'],
@@ -78,7 +78,7 @@ export default defineComponent({
     }
   },
   mounted() {
-
+    this.selectedItems = this.preSelectedItems = this.items.filter(i => useSettingsStore().question_range.range.includes(i.id))
   },
   methods: {
     handleKeyDown(event: KeyboardEvent) {
@@ -160,6 +160,11 @@ export default defineComponent({
         bottom < itemRect.top ||
         top > itemRect.bottom
       )
+    }
+  },
+  watch: {
+    selectedItems() {
+      this.$emit('confirm', this.selectedItems)
     }
   }
 })

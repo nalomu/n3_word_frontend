@@ -14,6 +14,7 @@ declare type SettingsStore = {
    * 单次数量
    */
   question_count: number
+  daily_count: number
 
 }
 
@@ -24,7 +25,8 @@ export const useSettingsStore = defineStore('settings', {
         type: 'word',
         range: []
       },
-      question_count: 40
+      question_count: 40,
+      daily_count: 40
     }
   },
   actions: {
