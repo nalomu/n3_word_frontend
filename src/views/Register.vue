@@ -25,49 +25,37 @@
 
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import axios from 'axios'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
-import router from '@/router'
-import { mapState } from 'pinia'
 import { ElMessage } from 'element-plus'
 import request from '@/request'
 
-export default defineComponent({
-  name: 'Register',
-  computed: {
-    ...mapState(useUserStore, ['user', 'token'])
-
-  },
-  data() {
-    return {
-      form: {
-        username: '',
-        nickname: '',
-        repassword: '',
-        password: ''
-      }
-    }
-  },
-  methods: {
-    handleSubmit() {
-      if (this.form.password !== this.form.repassword) {
-        ElMessage.error('两次密码不一致')
-        return
-      }
-      request
-        .post('users/', this.form)
-        .then(({ data }) => {
-          if (data.code === 200) {
-            ElMessage.success(data.message)
-            const userStore = useUserStore()
-            userStore.login(this.form.username, this.form.password)
-          }
-        })
-    }
+const { user, token } = useUserStore()
+const form = ref({
+    username: '',
+    nickname: '',
+    repassword: '',
+    password: ''
   }
-})</script>
+)
+const handleSubmit = () => {
+  if (form.value.password !== form.value.repassword) {
+    ElMessage.error('两次密码不一致')
+    return
+  }
+  request
+    .post('users/', form.value)
+    .then(({ data }) => {
+      if (data.code === 200) {
+        ElMessage.success(data.message)
+        const userStore = useUserStore()
+        userStore.login(form.value.username, form.value.password)
+      }
+    })
+}
+
+</script>
 
 <style scoped>
 

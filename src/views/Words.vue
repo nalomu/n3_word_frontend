@@ -8,44 +8,38 @@
       <el-table-column prop="category.name" label="分类"></el-table-column>
       <el-table-column prop="remark" label="备注"></el-table-column>
     </el-table>
-    <el-pagination layout="prev, pager, next" :total="words.length" v-model:current-page="currentPage" v-model:page-size="pageSize" />
+    <el-pagination
+      layout="prev, pager, next"
+      :total="words.length"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+    />
   </el-card>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import request from '@/request'
-import { defineComponent } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
-export default defineComponent({
-  name: 'Words',
-  mounted() {
-    this.getWords()
-  },
-  computed: {
-    sliceData() {
-      return this.words.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
-    }
-  },
-  data() {
-    return {
-      words: [],
-      currentPage: 1,
-      pageSize: 20
-    }
-  },
-  methods: {
+const words = ref([] as Word[])
+const currentPage = ref(1)
+const pageSize = ref(20)
+const sliceData = computed(() => {
+  return words.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value)
+})
+const getWords = () => {
+  request.get('words').then(({ data }) => {
+    console.log(data)
+    if (data.code === 200) {
+      words.value = data.data
 
-    getWords() {
-      request.get('words').then(({ data }) => {
-        console.log(data)
-        if (data.code === 200) {
-          this.words = data.data
-
-        }
-      })
     }
-  }
-})</script>
+  })
+}
+onMounted(() => {
+  getWords()
+})
+</script>
 
 <style scoped>
 
