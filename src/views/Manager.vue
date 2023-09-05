@@ -6,25 +6,25 @@
           <el-button @click="handleCreate">添加单词</el-button>
           <el-upload
             ref="upload"
-            class="upload-demo"
             :action="BASE_URL + 'uploadfile/'"
             :headers="{'Authorization': 'Bearer '+ token}"
             :limit="1"
             :on-exceed="handleExceed"
+            class="upload-demo"
           >
             <template #trigger>
               <el-button type="primary">导入单词</el-button>
             </template>
           </el-upload>
-          <el-button icon="refresh" @click="getWords" :loading="loading"></el-button>
+          <el-button :loading="loading" icon="refresh" @click="getWords"></el-button>
           <el-form-item>
-            <el-input placeholder="筛选单词" v-model="searchQuery.word"></el-input>
+            <el-input v-model="searchQuery.word" placeholder="筛选单词"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-input placeholder="筛选翻译" v-model="searchQuery.translation"></el-input>
+            <el-input v-model="searchQuery.translation" placeholder="筛选翻译"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-select placeholder="筛选分类" v-model="searchQuery.category_id" clearable>
+            <el-select v-model="searchQuery.category_id" clearable placeholder="筛选分类">
               <el-option
                 v-for="item in categories"
                 :key="item.id"
@@ -34,28 +34,34 @@
             </el-select>
           </el-form-item>
         </div>
-        <el-table :data="sliceData" style="height: calc(80vh - 60px - 40px)" :row-class-name="tableRowClassName" v-loading="loading">
-          <el-table-column prop="id" label="ID" width="80px"></el-table-column>
-          <el-table-column prop="word" label="日文"></el-table-column>
-          <el-table-column prop="translation" label="中文"></el-table-column>
-          <el-table-column prop="pronunciation" label="注音">
+        <el-table
+          v-loading="loading"
+          :data="sliceData"
+          :row-class-name="tableRowClassName"
+          style="height: calc(80vh - 60px - 40px)"
+        >
+          <el-table-column label="ID" prop="id" width="80px"></el-table-column>
+          <el-table-column label="日文" prop="word"></el-table-column>
+          <el-table-column label="中文" prop="translation"></el-table-column>
+          <el-table-column label="注音" prop="pronunciation">
             <template #default="{row}">
-              <el-link type="primary" :underline="false" @click="playRow(row)"><span style="margin-right: 8px;">{{ row.pronunciation }}</span>
+              <el-link :underline="false" type="primary" @click="playRow(row)">
+                <span style="margin-right: 8px;">{{ row.pronunciation }}</span>
                 <el-icon v-if="row.audio">
                   <Headset />
                 </el-icon>
               </el-link>
             </template>
           </el-table-column>
-          <el-table-column prop="category.name" label="分类"></el-table-column>
-          <el-table-column prop="remark" label="备注"></el-table-column>
+          <el-table-column label="分类" prop="category.name"></el-table-column>
+          <el-table-column label="备注" prop="remark"></el-table-column>
           <el-table-column label="操作" width="200px">
             <template #default="{row}">
               <div class="operator">
                 <el-link :underline="false" type="primary" @click="handleEdit(row)">编辑</el-link>
                 <el-link :underline="false" type="danger" @click="handleDelete(row)">删除</el-link>
-                <el-link :underline="false" type="primary" @click="handleGenerate(row)" :disabled="row.loading">
-                  <el-icon :loading="row.loading" v-if="row.loading">
+                <el-link :disabled="row.loading" :underline="false" type="primary" @click="handleGenerate(row)">
+                  <el-icon v-if="row.loading" :loading="row.loading">
                     <Loading />
                   </el-icon>
                   生成读音
@@ -64,18 +70,25 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination layout="prev, pager, next" :total="filteredData.length" v-model:current-page="currentPage" v-model:page-size="pageSize" />
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total="filteredData.length"
+          layout="prev, pager, next"
+        />
       </el-tab-pane>
       <el-tab-pane label="分类">
         <div class="operator">
           <el-button @click="handleCreateCategory">添加分类</el-button>
         </div>
         <el-table :data="categories" style="height: calc(80vh - 60)">
-          <el-table-column prop="id" label="ID"></el-table-column>
-          <el-table-column prop="name" label="分类名"></el-table-column>
+          <el-table-column label="ID" prop="id"></el-table-column>
+          <el-table-column label="分类名" prop="name"></el-table-column>
           <el-table-column label="操作">
             <template #default="{row}">
-              <el-link :underline="false" style="margin-right: 8px;" type="primary" @click="handleEditCategory(row)">编辑</el-link>
+              <el-link :underline="false" style="margin-right: 8px;" type="primary" @click="handleEditCategory(row)">
+                编辑
+              </el-link>
               <el-link :underline="false" type="primary" @click="handleDeleteCategory(row)">删除</el-link>
             </template>
           </el-table-column>
@@ -86,7 +99,7 @@
       </el-tab-pane>
     </el-tabs>
     <!-- 单词添加/编辑弹窗 -->
-    <el-dialog :title="dialogTitle" v-model="editVisible">
+    <el-dialog v-model="editVisible" :title="dialogTitle">
       <el-form label-width="120px">
         <el-form-item label="日文">
           <el-input v-model="form.word" />
@@ -116,7 +129,7 @@
         </el-form-item>
       </el-form>
     </el-dialog>
-    <el-dialog :title="categoryTab.dialogTitle" v-model="categoryTab.editVisible">
+    <el-dialog v-model="categoryTab.editVisible" :title="categoryTab.dialogTitle">
       <el-form label-width="120px" @submit.navive.prevent="onSubmitCategory">
         <el-form-item label="分类名">
           <el-input v-model="categoryTab.form.name" />
@@ -135,7 +148,7 @@
 import { defineComponent } from 'vue'
 import { mapState } from 'pinia'
 import { useUserStore } from '@/stores/user'
-import { ElMessage, ElMessageBox, genFileId, UploadInstance, UploadRawFile } from 'element-plus'
+import { ElMessage, ElMessageBox, genFileId, type UploadInstance, type UploadRawFile } from 'element-plus'
 import { BASE_URL } from '@/env'
 import request from '@/request'
 import FeedbackManage from '@/views/components/FeedbackManage.vue'
@@ -167,29 +180,29 @@ export default defineComponent({
       currentPage: 1,
       pageSize: 20,
       BASE_URL,
-      words: [],
-      categories: [],
+      words: [] as Word[],
+      categories: [] as Category[],
       searchQuery: {
         word: '',
         translation: '',
-        category_id: null
+        category_id: null as null | number
       },
       dialogTitle: '',
       editVisible: false,
       loading: false,
       form: {
-        id: null,
+        id: null as null | number,
         word: '',
         translation: '',
         pronunciation: '',
-        category_id: '',
+        category_id: null as number | null,
         remark: ''
       },
       categoryTab: {
         dialogTitle: '',
         editVisible: false,
         form: {
-          id: null,
+          id: null as null | number,
           name: ''
         }
       }
@@ -200,12 +213,12 @@ export default defineComponent({
     this.getCategories()
   },
   methods: {
-    tableRowClassName({ row }) {
+    tableRowClassName({ row }: { row: Word & { loading: boolean } }) {
       return row.loading ? 'loading' : ''
     },
-    handleExceed(files) {
+    handleExceed(files: UploadRawFile[]) {
       (this.$refs.upload as UploadInstance).clearFiles()
-      const file = files[0] as UploadRawFile
+      const file = files[0]
       file.uid = genFileId()
       ;(this.$refs.upload as UploadInstance).handleStart(file)
     },
@@ -233,18 +246,22 @@ export default defineComponent({
         word: '',
         translation: '',
         pronunciation: '',
-        category_id: '',
+        category_id: null,
         remark: ''
       }
     },
-    handleEdit(row) {
+    handleEdit(row: Word) {
       this.dialogTitle = '编辑单词'
       this.editVisible = true
       this.form = { ...row }
     },
-    handleDelete(row) {
+    handleDelete(row: Word) {
       console.log(row)
-      ElMessageBox.confirm('确认要删除吗', '提示', { type: 'warning', confirmButtonText: '确定', cancelButtonText: '取消' }).then(res => {
+      ElMessageBox.confirm('确认要删除吗', '提示', {
+        type: 'warning',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
         request.delete(`words/${row.id}`).then(({ data }) => {
           console.log(data)
           if (data.code === 200) {
@@ -254,7 +271,7 @@ export default defineComponent({
         })
       })
     },
-    handleGenerate(row) {
+    handleGenerate(row: Word & { loading: boolean }) {
       row.loading = true
       request.get(`words/${row.id}/audio`).then(({ data }) => {
         row.loading = false
@@ -288,7 +305,7 @@ export default defineComponent({
     onCancel() {
       this.editVisible = false
     },
-    playRow(row) {
+    playRow(row: Word) {
       if (row.audio) {
         console.log(row.audio)
         const audio = new Audio(row.audio)
@@ -307,14 +324,18 @@ export default defineComponent({
       }
 
     },
-    handleEditCategory(row) {
+    handleEditCategory(row: Category) {
       this.categoryTab.dialogTitle = '编辑分类'
       this.categoryTab.editVisible = true
       this.categoryTab.form = { ...row }
     },
-    handleDeleteCategory(row) {
+    handleDeleteCategory(row: Category) {
       console.log(row)
-      ElMessageBox.confirm('确认要删除吗', '提示', { type: 'warning', confirmButtonText: '确定', cancelButtonText: '取消' }).then(res => {
+      ElMessageBox.confirm('确认要删除吗', '提示', {
+        type: 'warning',
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
         request.delete(`categories/${row.id}`).then(({ data }) => {
           if (data.code === 200) {
             ElMessage.success(data.message)
@@ -349,7 +370,7 @@ export default defineComponent({
 })
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .operator {
   display: flex;
 

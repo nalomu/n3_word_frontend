@@ -19,36 +19,26 @@
 
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import axios from 'axios'
+<script lang="ts" setup>
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import router from '@/router'
-import { mapState } from 'pinia'
-import { ElMessage } from 'element-plus'
-import request from '@/request'
 
-export default defineComponent({
-  name: 'Login',
-  computed: {
-    ...mapState(useUserStore, ['user', 'token'])
+const userStore = useUserStore()
 
-  },
-  data() {
-    return {
-      form: {
-        username: '',
-        password: ''
-      }
-    }
-  },
-  methods: {
-    handleSubmit() {
-      const userStore = useUserStore()
-      userStore.login(this.form.username, this.form.password)
-    }
-  }
-})</script>
+if (userStore.token) {
+  router.push('/')
+}
+const form = ref({
+  username: '',
+  password: ''
+})
+
+const handleSubmit = () => {
+  const userStore = useUserStore()
+  userStore.login(form.value.username, form.value.password)
+}
+</script>
 
 <style scoped>
 

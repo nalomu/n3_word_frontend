@@ -6,20 +6,20 @@
     </div>
     <el-alert type="success">框选下面的单词, 默认反选, 按住shift加选，点击也可以选中。</el-alert>
     <div
-      tabindex="0"
-      class="selection-box"
       ref="selectionBox"
-      @mousedown="handleMouseDown"
-      @mouseup="handleMouseUp"
-      @mousemove="handleMouseMove"
-      @mouseleave="handleMouseUp"
+      class="selection-box"
+      tabindex="0"
       @keydown="handleKeyDown"
       @keyup="handleKeyUp"
+      @mousedown="handleMouseDown"
+      @mouseleave="handleMouseUp"
+      @mousemove="handleMouseMove"
+      @mouseup="handleMouseUp"
     >
-      <div :style="selectionBoxStyles" v-if="isSelecting"></div>
-      <el-row class="word-list" :gutter="20">
-        <el-col :xs="12" :sm="12" :md="6" :lg="6" :xl="4" v-for="(item, index) in items" :key="item.id">
-          <div class="word-item" :class="{active: preSelectedItems.includes(item)}" :ref="`item${index}`">
+      <div v-if="isSelecting" :style="selectionBoxStyles"></div>
+      <el-row :gutter="20" class="word-list">
+        <el-col v-for="(item, index) in items" :key="item.id" :lg="6" :md="6" :sm="12" :xl="4" :xs="12">
+          <div :ref="`item${index}`" :class="{active: preSelectedItems.includes(item)}" class="word-item">
 
             <div class="ruby">
               <ruby>
@@ -36,14 +36,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type PropType } from 'vue'
+import type { StyleValue } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
 
 export default defineComponent({
   emits: ['confirm'],
   props: {
     items: {
-      type: Array,
+      type: Array as PropType<Word[]>,
       required: true
     }
   },
@@ -56,15 +57,15 @@ export default defineComponent({
       startY: 0,
       endX: 0,
       endY: 0,
-      selectedItems: [],
-      preSelectedItems: []
+      selectedItems: [] as Word[],
+      preSelectedItems: [] as Word[]
     }
   },
   computed: {
-    selectionBoxStyles() {
+    selectionBoxStyles(): StyleValue {
       const rect = (this.$refs.selectionBox as HTMLElement).getBoundingClientRect()
       const scrollTop = (this.$refs.selectionBox as HTMLElement).scrollTop
-      const styles = {
+      return {
         zIndex: '99',
         position: 'absolute',
         border: '1px dashed #000',
@@ -74,11 +75,11 @@ export default defineComponent({
         width: `${Math.abs(this.startX - this.endX)}px`,
         height: `${Math.abs(this.startY - this.endY)}px`
       }
-      return styles
+
     }
   },
   mounted() {
-    this.selectedItems = this.preSelectedItems = this.items.filter(i => useSettingsStore().question_range.range.includes(i.id))
+    this.selectedItems = this.preSelectedItems = this.items!.filter(i => useSettingsStore().question_range.range.includes(i.id))
   },
   methods: {
     handleKeyDown(event: KeyboardEvent) {

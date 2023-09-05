@@ -9,17 +9,19 @@
       </div>
     </el-form-item>
     <el-form-item label="错误类型">
-      <el-select placeholder="选择错误类型" v-model="error_type">
+      <el-select v-model="error_type" placeholder="选择错误类型">
         <el-option label="读音错误" value="pronunciation"></el-option>
         <el-option label="翻译错误" value="translate"></el-option>
       </el-select>
     </el-form-item>
     <el-form-item label="读音上传">
       <div>
-        <el-button @click="isRecording ? stop() : start()">{{ isRecording ? '停止录音' : (audioUrl ? '重新录音' : '开始录音') }}</el-button>
+        <el-button @click="isRecording ? stop() : start()">
+          {{ isRecording ? '停止录音' : (audioUrl ? '重新录音' : '开始录音') }}
+        </el-button>
       </div>
       <div style="margin-top: 20px;">
-        <audio :src="audioUrl" v-if="audioUrl" controls autoplay></audio>
+        <audio v-if="audioUrl" :src="audioUrl" autoplay controls></audio>
       </div>
     </el-form-item>
     <el-form-item>
@@ -31,7 +33,7 @@
 <script lang="ts">
 import { ElMessage } from 'element-plus'
 import request from '@/request'
-import { PropType } from 'vue'
+import type { PropType } from 'vue'
 
 export default {
   name: 'Recorder',

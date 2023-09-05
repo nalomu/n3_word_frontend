@@ -10,11 +10,14 @@
   ],
   "compilerOptions": {
     "isolatedModules": true,
-    "strict": true,
+    "noImplicitThis": true,
+    "strict": false,
     "composite": true,
-    "baseUrl": "./n3_words",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "src/*"
+      ]
     }
   }
 }

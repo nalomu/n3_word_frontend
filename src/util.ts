@@ -5,18 +5,17 @@ export function shuffleArray(array: Array<any>) {
   }
 }
 
-export function getRandomElementsFromArray(array: Array<any>, count: number) {
+export function getRandomElementsFromArray(array: any[], count: number) {
   const shuffledArray = [...array]
   shuffleArray(shuffledArray)
   return shuffledArray.slice(0, count)
 }
 
-export function avg(arr: Array<any>) {
+export function avg(arr: any[]) {
   if (arr.length === 0) {
     return 0 // 避免除以 0
   }
 
   const sum = arr.reduce((total, num) => total + num, 0)
-  const average = sum / arr.length
-  return average
+  return sum / arr.length
 }
