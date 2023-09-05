@@ -14,6 +14,9 @@
     "strict": false,
     "composite": true,
     "baseUrl": ".",
+    "types": [
+      "element-plus/global.d.ts"
+    ],
     "paths": {
       "@/*": [
         "src/*"

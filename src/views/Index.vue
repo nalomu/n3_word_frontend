@@ -124,7 +124,7 @@ const { user } = useUserStore()
 
 // 获取单词数据
 const getWords = async () => {
- 
+
   const ins = ElMessage({
     duration: 0,
     message: '加载题库中',
