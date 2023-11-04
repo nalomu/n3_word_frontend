@@ -28,7 +28,6 @@
     </template>
   </el-menu>
   <div v-else class="tabbar">
-
     <template v-for="route in userStore.menus.filter(i=>!i.meta.hidden)" :key="route.path">
       <router-link :class="{active: activeRoute.path === route.path}" :to="route.path" class="tabbar-item">
         <el-icon size="22">
@@ -81,7 +80,7 @@ onMounted(function () {
     align-items: center;
 
     &.active {
-      color: #86b769;
+      color: hsla(160, 100%, 37%, 1);
     }
   }
 }
