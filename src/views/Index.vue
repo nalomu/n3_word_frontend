@@ -108,7 +108,7 @@ import { Howl } from 'howler'
 import Recorder from '@/components/Recorder.vue'
 import { useSettingsStore } from '@/stores/settings'
 import SettingsPanel from '@/components/SettingsPanel.vue'
-import { NotificationHandle } from 'element-plus/es/components/notification/src/notification'
+import type { NotificationHandle } from 'element-plus/es/components/notification/src/notification'
 
 // 使用设置存储
 const settings = useSettingsStore()
