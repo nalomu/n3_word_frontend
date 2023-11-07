@@ -100,6 +100,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
+import type { Ref } from 'vue'
 import { ElMessage, ElMessageBox, ElNotification } from 'element-plus'
 import { useUserStore } from '@/stores/user'
 import request from '@/request'
@@ -121,8 +122,8 @@ const page = ref(1) // 存储当前页数
 const usedWords = ref<Set<Word>>(new Set()) // 存储已经使用的单词集合
 const randomWords = ref<Word[]>([]) // 存储随机选取的单词列表
 const acc = ref<boolean[]>([]) // 存储答题准确性的数组
-const right = ref<Word | null>(null) // 存储当前正确的单词
-const prevError = ref<Word | null>(null) // 存储上一个错误的单词
+const right: Ref<Word | null> = ref(null) // 存储当前正确的单词
+const prevError: Ref<Word | null> = ref(null) // 存储上一个错误的单词
 
 
 const colors = [
@@ -364,10 +365,12 @@ onMounted(async () => {
   font-size: 20px;
   font-weight: bold;
 }
-.flex{
+
+.flex {
   display: flex;
 }
-.result-item{
+
+.result-item {
   font-size: 18px;
   flex: 0 0 calc(50% - 30px);
   margin: 10px 15px;
@@ -386,7 +389,8 @@ onMounted(async () => {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  .el-button{
+
+  .el-button {
     margin: 15px;
     font-size: 20px;
     padding: 30px 40px;
