@@ -1,6 +1,7 @@
 <template>
   <div class="index-container">
     <el-card class="operator">
+      <el-button round @click="startRandom">随机答题</el-button>
       <el-button round @click="restart">{{ right ? '重新开始' : '开始答题' }}</el-button>
       <el-button round @click="selectRange">答题设置</el-button>
       <el-button v-if="user && right" round @click="errorReport">读音/单词报错</el-button>
@@ -153,7 +154,7 @@ const { user } = useUserStore()
 
 
 // 获取单词数据
-const getWords = async () => {
+const getWords = async (is_random = false) => {
 
   const ins = ElMessage({
     duration: 0,
@@ -164,7 +165,8 @@ const getWords = async () => {
   const { data } = await request.post('words_list', {
     question_range: settings.question_range,
     question_count: settings.question_count,
-    page: page.value
+    page: page.value,
+    is_random
   })
   ins.close()
   if (data.code === 200) {
@@ -172,6 +174,7 @@ const getWords = async () => {
     total.value = data.data.total
   }
 }
+
 
 /**
  * 答题相关部分
@@ -189,6 +192,10 @@ const reset = () => {
 const restart = () => {
   reset()
   getRandomWords()
+}
+// 重新开始答题
+const startRandom = () => {
+  getWords(true).then(restart)
 }
 
 // 切换到下一章节

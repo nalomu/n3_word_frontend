@@ -232,7 +232,7 @@ export default defineComponent({
       })
     },
     getCategories() {
-      request.get('categories/').then(({ data }) => {
+      request.get('categories').then(({ data }) => {
         if (data.code === 200) {
           this.categories = data.data
         }
