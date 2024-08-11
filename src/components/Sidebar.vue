@@ -2,7 +2,7 @@
   <el-menu
     v-if="!isMobile"
     :default-active="activeRoute.path"
-    class="sidebar-menu"
+    class="sidebar-menu bg-gradient-to-l from-blue-50"
     router
     style="height: 100%"
     unique-opened
@@ -10,7 +10,7 @@
     <template v-for="route in userStore.menus.filter(i=>!i.meta.hidden)" :key="route.path">
       <el-sub-menu v-if="route.children.length" :index="route.path">
         <template #title>
-          <el-icon>
+          <el-icon >
             <component :is="route.meta.icon"></component>
           </el-icon>
           <span>{{ route.meta.title }}</span>
@@ -20,7 +20,7 @@
         </el-menu-item>
       </el-sub-menu>
       <el-menu-item v-else :index="route.path">
-        <el-icon>
+        <el-icon >
           <component :is="route.meta.icon"></component>
         </el-icon>
         <span>{{ route.meta.title }}</span>

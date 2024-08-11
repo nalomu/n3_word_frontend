@@ -1,14 +1,14 @@
 <template>
   <div class="nalomu-header">
-    <div class="site-logo">
+    <div class="site-logo hover:text-sky-400 cursor-pointer transition-all" @click="$router.push('/')">
       <img src="@/assets/logo.png" alt="">
       <span>猹词单</span>
     </div>
-    <div class="user-info" v-if="userStore.user">
-      <router-link to="/user" style="margin-right: 8px;" >{{ userStore.user?.nickname }}</router-link>
-      <a @click="userStore.logout" type="text" class="logout-button">登出</a>
+    <div class="user-info text-indigo-700" v-if="userStore.user">
+      <router-link to="/user" class="hover:text-sky-400" style="margin-right: 8px;" >{{ userStore.user?.nickname }}</router-link>
+      <a  @click="userStore.logout" type="text" class="logout-button hover:text-sky-400 cursor-pointer">登出</a>
     </div>
-    <div class="user-info" v-else>
+    <div class="user-info text-indigo-700" v-else>
       <router-link class="user-info-link" to="/login">登录</router-link>
       <router-link class="user-info-link" to="/register">注册</router-link>
     </div>

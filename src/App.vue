@@ -5,8 +5,8 @@ import NalomuHeader from '@/components/NalomuHeader.vue'
 </script>
 
 <template>
-  <el-container class="main">
-    <el-header class="header">
+  <el-container class="main bg-gradient-to-tl from-blue-50">
+    <el-header class="header bg-gradient-to-r from-indigo-50 shadow-sm">
       <NalomuHeader />
     </el-header>
     <el-container class="container">
@@ -22,11 +22,11 @@ import NalomuHeader from '@/components/NalomuHeader.vue'
 
 <style scoped lang="scss">
 .header {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
-  border-bottom: 1px solid rgba(0, 0, 0, .12);
+  //box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+  //border-bottom: 1px solid rgba(0, 0, 0, .12);
   position: fixed;
   width: 100%;
-  background-color: #fff;
+  //background-color: #fff;
   z-index: 1024;
 }
 

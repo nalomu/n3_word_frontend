@@ -1,15 +1,23 @@
 <template>
-  <div class="index-container">
+  <div class="index-container ">
     <el-card class="operator">
-      <el-button round @click="startRandom">随机答题</el-button>
-      <el-button round @click="restart">{{ right ? '重新开始' : '开始答题' }}</el-button>
-      <el-button round @click="selectRange">答题设置</el-button>
-      <el-button v-if="user && right" round @click="errorReport">读音/单词报错</el-button>
+      <el-button @click="startRandom">随机答题</el-button>
+      <el-button @click="restart">{{ right ? '重新开始' : '开始答题' }}</el-button>
+      <el-button @click="selectRange">答题设置</el-button>
     </el-card>
     <el-card class="operator">
-      题库：共{{ total }} 个单词，目前 {{ currentStart }} - {{ currentEnd }}
-      <el-button round @click="nextChapter">跳过本节</el-button>
-      <el-button round @click="showWords">查看本节单词</el-button>
+      <div class="text-gray-500 text-center">
+        <div class="flex mb-2">
+          <div class="flex-none w-20 font-bold">题库</div>
+          <div class="flex-1 text-left">共{{ total }} 个单词</div>
+        </div>
+        <div class="flex mb-2">
+          <div class="flex-none w-20 font-bold">目前</div>
+          <div class="flex-1 text-left">{{ currentStart }} - {{ currentEnd }}</div>
+        </div>
+      </div>
+      <el-button @click="nextChapter">跳过本节</el-button>
+      <el-button @click="showWords">查看本节单词</el-button>
     </el-card>
     <el-drawer
       :model-value="!!right"
@@ -28,8 +36,11 @@
       </template>
       <div v-if="randomWords.length>0" class="question">
         <ruby>{{ right.word }}
-          <rt> {{ right.pronunciation }}</rt>
+          <rt v-if="settings.question_type === 'word'"> {{ right.pronunciation }}</rt>
         </ruby>
+        <div>
+          <el-button v-if="user && right" class="n3-btn" round @click="errorReport">读音/单词报错</el-button>
+        </div>
       </div>
       <template v-else>
         <div style="text-align:center; display: flex;flex-direction: column;justify-content: space-around;min-height: 400px">
@@ -63,15 +74,19 @@
           <el-button type="primary" @click="nextChapter">下一章节</el-button>
         </div>
       </template>
-      <!--<el-button-group style="width: 100%;display:flex;">-->
+      <!-- 答案区域 -->
       <el-row :gutter="20" class="answer">
         <el-col v-for="word in randomWords" :md="12" :sm="12" :xs="24" class="answer-col">
           <el-button bg class="option-button" text @click="checkWord(word)">
-            {{ word.translation }}
+            <template v-if="settings.question_type ==='pronounce'">
+              {{ word.pronunciation }}
+            </template>
+            <template v-else>
+              {{ word.translation }}
+            </template>
           </el-button>
         </el-col>
       </el-row>
-      <!--</el-button-group>-->
     </el-drawer>
     <el-drawer v-model="settingsVisible" size="80%" title="答题设置">
       <SettingsPanel v-if="settingsVisible" @success="onConfirm" />
@@ -268,7 +283,9 @@ const getRandomWords = () => {
     return getRandomWords()
   }
   usedWords.value.add(right.value!)
-  playRightAudio()
+  if (!settings.close_audio) {
+    playRightAudio()
+  }
 }
 
 
@@ -410,5 +427,9 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+}
+
+.n3-btn {
+  @apply rounded-xl py-5 px-5 bg-blue-400 text-white;
 }
 </style>

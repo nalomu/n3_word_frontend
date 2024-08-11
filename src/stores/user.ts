@@ -28,6 +28,9 @@ export const useUserStore = defineStore('user', {
       if (this.user.settings) {
         useSettingsStore().setCount(this.user.settings.question_count)
         useSettingsStore().setRange(this.user.settings.question_range)
+        useSettingsStore().setType(this.user.settings.question_type || 'word')
+        useSettingsStore().setDailyCount(this.user.settings.daily_count || 40)
+        useSettingsStore().setCloseAudio(this.user.settings.close_audio || false)
       }
     },
     setToken(token: string, refresh_token: string) {
